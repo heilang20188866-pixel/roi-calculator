@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>黑狼电商ROI专业计算器 | 运营工具箱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f5fb 0%, #e9eef4 100%);
+            min-height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calculator-card {
+            max-width: 780px;
+            width: 100%;
+            background: rgba(255,255,255,0.96);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0a1c2a 0%, #1a2f3f 100%);
+            padding: 1rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header h1 {
+            font-size: 1.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 0;
+        }
+
+        .toolbox-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .toolbox-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .card-header p {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 0.3rem;
+            width: 100%;
+        }
+
+        .card-content {
+            padding: 1.8rem 2rem 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1f3b4c;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1rem;
+            background: white;
+            transition: 0.2s;
+            outline: none;
+            font-weight: 500;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+
+        .input-wrapper .unit {
+            position: absolute;
+            right: 12px;
+            background: #f1f5f9;
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+
+        .btn {
+            border: none;
+            background: #eef2f8;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #2c7da0;
+            color: white;
+        }
+        .btn-primary:hover { background: #1f6685; transform: translateY(-1px);}
+        .btn-secondary { background: #e9ecef; border: 1px solid #cddfe7;}
+        .btn-secondary:hover { background: #dfe6ed;}
+        .btn-danger { background: #ffe6e5; color: #b91c1c; border: 1px solid #ffcdca;}
+        .btn-danger:hover { background: #ffd9d7;}
+
+        .result-panel {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid #e2edf2;
+        }
+
+        .roi-primary {
+            background: linear-gradient(115deg, #eef5f9, white);
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-left: 4px solid #2c7da0;
+        }
+
+        .roi-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f2b3d;
+        }
+
+        .detail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #dce5ec;
+        }
+
+        .warning-message {
+            background: #fff1e0;
+            border-radius: 1rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            color: #b45f06;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .footnote {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #6c86a3;
+            border-top: 1px solid #e2edf2;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* 模态框通用 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            padding: 1rem 1.5rem;
+            background: #1e3a4b;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 { font-size: 1.3rem; }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: white;
+        }
+        .modal-body {
+            padding: 1.2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .toolbox-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        .toolbox-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .toolbox-list li::before {
+            content: "🔧";
+            font-size: 1rem;
+        }
+        .qr-container {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 1rem;
+        }
+        .qr-container img {
+            max-width: 180px;
+            width: 100%;
+            border-radius: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .qr-note {
+            font-size: 0.7rem;
+            color: #5b6e8c;
+            margin-top: 0.5rem;
+        }
+
+        /* 历史记录表格样式 */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        .history-table th, .history-table td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.6rem 0.3rem;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .history-table th { background: #f1f5f9; position: sticky; top: 0; }
+        .delete-checkbox { width: 30px; text-align: center; }
+        .batch-delete {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .empty-history { text-align: center; padding: 2rem; color: gray; }
+        .simulate-btn { background: #2c7da0; color: white; border: none; border-radius: 1rem; padding: 0.2rem 0.6rem; cursor: pointer; font-size: 0.7rem;}
+        .simulate-btn:hover { background: #1f6685;}
+
+        /* 实际盈亏弹窗 */
+        .sim-modal .modal-content { max-width: 500px; }
+        .sim-info {
+            background: #eef2fa;
+            border-radius: 0.8rem;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+        .sim-info div { margin: 0.2rem 0; }
+        .sim-form-group { margin-bottom: 1rem; }
+        .sim-form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; font-size: 0.85rem;}
+        .sim-form-group input { width: 100%; padding: 0.6rem; border-radius: 0.8rem; border: 1px solid #ccc; }
+        .sim-result { background: #eef2fa; border-radius: 1rem; padding: 0.8rem; margin-top: 1rem; text-align: center;}
+
+        @media (max-width: 600px) {
+            .card-content { padding: 1.2rem; }
+            .roi-value { font-size: 1.8rem; }
+            .card-header h1 { font-size: 1.3rem; }
+            .toolbox-btn { font-size: 0.75rem; padding: 0.3rem 1rem; }
+        }
+    </style>
+    <!-- 微信分享元标签 -->
+    <meta name="title" content="电商 ROI计算器 - 黑狼运营工具箱">
+    <meta name="description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金、退款率分析，实时计算利润率与保本 ROI">
+    <meta name="keywords" content="电商 ROI,ROI计算器，电商运营，投产比，利润率计算">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://heilang20188866-pixel.github.io/compliance-calculator/">
+    <meta property="og:title" content="电商 ROI计算器 - 黑狼运营工具箱">
+    <meta property="og:description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金、退款率分析">
+    <meta property="og:image" content="https://heilang20188866-pixel.github.io/compliance-calculator/blackwolf_qr.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://heilang20188866-pixel.github.io/compliance-calculator/">
+    <meta property="twitter:title" content="电商 ROI计算器 - 黑狼运营工具箱">
+    <meta property="twitter:description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金、退款率分析">
+    <meta property="twitter:image" content="https://heilang20188866-pixel.github.io/compliance-calculator/blackwolf_qr.png">
+    
+    <!-- 基础 Meta 标签 -->
+    <meta name="description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金、退款率分析，实时计算利润率与保本 ROI">
+    <meta name="keywords" content="电商 ROI,ROI计算器，电商运营，投产比，利润率计算，保本 ROI,黑狼工具箱">
+    
+    <!-- 微信分享专用元标签 -->
+    <meta name="wechat:description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金、退款率分析">
+    <meta name="wechat:title" content="电商 ROI计算器 - 黑狼运营工具箱">
+    <meta name="wechat:image" content="https://heilang20188866-pixel.github.io/compliance-calculator/blackwolf_qr.png">
+    
+    <!-- Open Graph 协议 (支持微信朋友圈、QQ、微博) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://heilang20188866-pixel.github.io/compliance-calculator/">
+    <meta property="og:title" content="电商 ROI计算器 - 黑狼运营工具箱">
+    <meta property="og:description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金、退款率分析，实时计算利润率与保本 ROI">
+    <meta property="og:image" content="https://heilang20188866-pixel.github.io/compliance-calculator/blackwolf_qr.png">
+    <meta property="og:image:width" content="200">
+    <meta property="og:image:height" content="200">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="电商 ROI计算器 - 黑狼运营工具箱">
+    <meta name="twitter:description" content="专业电商 ROI计算工具，支持成本、运费、扣点、佣金分析">
+    <meta name="twitter:image" content="https://heilang20188866-pixel.github.io/compliance-calculator/blackwolf_qr.png">
+    
+    <!-- 强制缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+</head>
+<body>
+
+<div class="calculator-card">
+    <div class="card-header">
+        <h1>🐺 黑狼电商ROI专业计算器</h1>
+        <button class="toolbox-btn" id="openToolboxBtn">🧰 运营工具箱</button>
+        <p>成本·运费·扣点·佣金·退款率 | 利润率 | 保本ROI | 实际盈亏+保本ROI计算</p>
+    </div>
+    <div class="card-content">
+        <div style="margin-bottom: 1rem;">
+            <div class="input-group">
+                <label>🏷️ 产品名称（记录用）</label>
+                <div class="input-wrapper">
+                    <input type="text" id="productName" placeholder="例: 夏季T恤 / 蓝牙耳机" value="示例商品">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="input-group"><label>📦 产品成本(元)</label><div class="input-wrapper"><input type="number" id="cost" value="20.00" step="0.01"><span class="unit">¥</span></div></div>
+            <div class="input-group"><label>🚚 每单运费(元)</label><div class="input-wrapper"><input type="number" id="shipping" value="5.00" step="0.01"><span class="unit">¥</span></div></div>
+            <div class="input-group"><label>🏷️ 售价(元)</label><div class="input-wrapper"><input type="number" id="price" value="50.00" step="0.01"><span class="unit">¥</span></div></div>
+            <div class="input-group"><label>📌 平台扣点(%)</label><div class="input-wrapper"><input type="number" id="platformRate" value="5.0" step="0.1"><span class="unit">%</span></div></div>
+            <div class="input-group"><label>🤝 佣金(%)</label><div class="input-wrapper"><input type="number" id="commissionRate" value="3.0" step="0.1"><span class="unit">%</span></div></div>
+            <div class="input-group">
+                <label>📦 其他费用(元) <span style="color:#a0aec0;">(例如：坑位费)</span></label>
+                <div class="input-wrapper"><input type="number" id="otherFee" value="0.00" step="0.01"><span class="unit">¥</span></div>
+            </div>
+            <div class="input-group"><label>🔄 退款率(%)</label><div class="input-wrapper"><input type="number" id="refundRate" value="0.0" step="0.5" min="0"><span class="unit">%</span></div></div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-secondary" id="resetExampleBtn">🔄 重置示例</button>
+            <button class="btn btn-secondary" id="clearAllBtn">🧹 全部清零</button>
+            <button class="btn btn-secondary" id="historyBtn">📜 历史记录</button>
+            <button class="btn btn-primary" id="saveRecordBtn">💾 保存当前记录</button>
+        </div>
+
+        <div class="result-panel">
+            <div class="roi-primary">
+                <div class="roi-label">📈 保本ROI (含退款率)</div>
+                <div class="roi-value" id="roiWithRefund">--</div>
+                <div style="font-size:0.7rem;">广告ROI > 此值即盈利（已考虑退款损失）</div>
+            </div>
+            <div id="warningArea"></div>
+            <div class="detail-list">
+                <div class="detail-item"><span>💰 不含退款单件毛利</span><span id="profitWithoutRefund">-</span></div>
+                <div class="detail-item"><span>🔄 剔除退款后有效毛利(元/单)</span><span id="profitWithRefund">-</span></div>
+                <div class="detail-item"><span>📊 利润率（含退款）</span><span id="profitMarginRate">-</span></div>
+                <div class="detail-item"><span>📐 原保本ROI(无退款)</span><span id="roiWithoutRefund">-</span></div>
+            </div>
+            <div class="footnote">
+                💡 保本ROI(含退款) = 售价 ÷ [售价×(1-退款率) - 总成本]。利润率 = 有效毛利 ÷ 售价 × 100%<br>
+                📌 历史记录中可针对任一产品进行实际盈亏计算，并计算该场景下的保本ROI。
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 运营工具箱模态框 -->
+<div id="toolboxModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🧰 Welcome to 黑狼工具箱</h3>
+            <button class="close-modal" id="closeToolboxModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul class="toolbox-list">
+                <li>抖音、微信小店、体验分提升全网最新技术（包有效）</li>
+                <li>抖音直播间数据提升，人气，互动</li>
+                <li>千川素材去重工具箱，能解决60%的审核建议问题</li>
+                <li>抖音、淘系、微信小店、小红书代运营业务</li>
+                <li>只要你想的到的电商工具，我这都有，欢迎前来咨询</li>
+            </ul>
+            <div class="qr-container">
+                <!-- 方式1：将您的二维码图片命名为 blackwolf_qr.png 并放在同目录下 -->
+                <img id="qrImage" src="blackwolf_qr.png" alt="黑狼微信二维码" style="max-width:180px; width:100%;" onerror="this.onerror=null; this.alt='二维码图片未找到，请将图片命名为 blackwolf_qr.png 放入同目录';">
+                <div class="qr-note">👆 扫码添加微信，获取更多电商工具</div>
+                <div class="qr-note" style="color:#a0aec0;">※ 如未显示图片，请将二维码图片命名为 blackwolf_qr.png 放入本文件所在文件夹</div>
+                <div class="qr-note" style="color:#a0aec0; margin-top:0.3rem;">💡 也可以将图片转为Base64直接替换src（见代码注释）</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 历史记录模态框 -->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📋 历史记录</h3>
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="search-bar">
+                <input type="text" id="searchHistoryInput" placeholder="🔍 按产品名称搜索...">
+                <button class="btn btn-secondary" id="searchHistoryBtn">搜索</button>
+            </div>
+            <div id="historyListContainer">
+                <div class="empty-history">加载中...</div>
+            </div>
+            <div class="batch-delete">
+                <button class="btn btn-danger" id="batchDeleteBtn">🗑️ 删除选中记录</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 实际盈亏计算弹窗 -->
+<div id="simulateModal" class="modal sim-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💰 实际盈亏计算 + 保本ROI推算</h3>
+            <button class="close-modal" id="closeSimModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="simProductInfo" class="sim-info"></div>
+            <div class="sim-form-group">
+                <label>实际总销售额 (GMV) 元</label>
+                <input type="number" id="simGMV" step="1" placeholder="例如：10000">
+            </div>
+            <div class="sim-form-group">
+                <label>实际退款率 (%)</label>
+                <input type="number" id="simRefundRate" step="0.5" value="0" placeholder="0">
+            </div>
+            <div class="sim-form-group">
+                <label>实际ROI (广告投产比)</label>
+                <input type="number" id="simROI" step="0.1" value="2.0" placeholder="例如：2.5">
+            </div>
+            <button class="btn btn-primary" id="calcSimBtn" style="width:100%;">🚀 计算实际盈亏</button>
+            <div class="sim-result" id="simResultArea">
+                <!-- 计算结果 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- DOM 元素 ----------
+    const productNameInput = document.getElementById('productName');
+    const costInput = document.getElementById('cost');
+    const shippingInput = document.getElementById('shipping');
+    const priceInput = document.getElementById('price');
+    const platformRateInput = document.getElementById('platformRate');
+    const commissionRateInput = document.getElementById('commissionRate');
+    const otherFeeInput = document.getElementById('otherFee');
+    const refundRateInput = document.getElementById('refundRate');
+
+    const roiWithRefundSpan = document.getElementById('roiWithRefund');
+    const profitWithoutRefundSpan = document.getElementById('profitWithoutRefund');
+    const profitWithRefundSpan = document.getElementById('profitWithRefund');
+    const profitMarginRateSpan = document.getElementById('profitMarginRate');
+    const roiWithoutRefundSpan = document.getElementById('roiWithoutRefund');
+    const warningArea = document.getElementById('warningArea');
+
+    const resetExampleBtn = document.getElementById('resetExampleBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const saveRecordBtn = document.getElementById('saveRecordBtn');
+    const historyBtn = document.getElementById('historyBtn');
+    const modal = document.getElementById('historyModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const searchHistoryInput = document.getElementById('searchHistoryInput');
+    const searchHistoryBtn = document.getElementById('searchHistoryBtn');
+    const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+    const historyListContainer = document.getElementById('historyListContainer');
+
+    const simulateModal = document.getElementById('simulateModal');
+    const closeSimModalBtn = document.getElementById('closeSimModalBtn');
+    const simProductInfo = document.getElementById('simProductInfo');
+    const simGMV = document.getElementById('simGMV');
+    const simRefundRate = document.getElementById('simRefundRate');
+    const simROI = document.getElementById('simROI');
+    const calcSimBtn = document.getElementById('calcSimBtn');
+    const simResultArea = document.getElementById('simResultArea');
+
+    // 工具箱模态框
+    const toolboxModal = document.getElementById('toolboxModal');
+    const openToolboxBtn = document.getElementById('openToolboxBtn');
+    const closeToolboxModalBtn = document.getElementById('closeToolboxModalBtn');
+
+    let currentSimRecord = null;
+    const STORAGE_KEY = 'heilang_ecom_roi_history';
+    let historyRecords = [];
+
+    function loadHistoryFromStorage() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try { historyRecords = JSON.parse(stored); } catch(e) { historyRecords = []; }
+        } else { historyRecords = []; }
+    }
+    function saveHistoryToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(historyRecords)); }
+
+    function computeUnitMetrics() {
+        let cost = parseFloat(costInput.value) || 0;
+        let shipping = parseFloat(shippingInput.value) || 0;
+        let price = parseFloat(priceInput.value) || 0;
+        let platformRate = parseFloat(platformRateInput.value) || 0;
+        let commissionRate = parseFloat(commissionRateInput.value) || 0;
+        let otherFee = parseFloat(otherFeeInput.value) || 0;
+        let refundRate = parseFloat(refundRateInput.value) || 0;
+
+        const platformFee = (price * platformRate) / 100;
+        const commissionFee = (price * commissionRate) / 100;
+        const totalCostPerUnit = cost + shipping + platformFee + commissionFee + otherFee;
+        const profitBeforeRefund = price - totalCostPerUnit;
+        const effectiveRevenue = price * (1 - refundRate / 100);
+        const profitAfterRefund = effectiveRevenue - totalCostPerUnit;
+        const profitMargin = (profitAfterRefund / price) * 100;
+        let breakEvenWithRefund = (profitAfterRefund > 0) ? (price / profitAfterRefund) : Infinity;
+        let breakEvenWithoutRefund = (profitBeforeRefund > 0) ? (price / profitBeforeRefund) : Infinity;
+
+        return { 
+            profitBeforeRefund, profitAfterRefund, breakEvenWithRefund, breakEvenWithoutRefund, 
+            price, totalCostPerUnit, refundRate, profitMargin,
+            cost, shipping, platformRate, commissionRate, otherFee, platformFee, commissionFee 
+        };
+    }
+
+    function renderResults() {
+        const res = computeUnitMetrics();
+        if (res.profitAfterRefund <= 0) {
+            roiWithRefundSpan.innerHTML = res.profitAfterRefund < 0 ? '⚠️ 无法保本' : '∞ (零利润)';
+            warningArea.innerHTML = `<div class="warning-message">⚠️ 剔除退款后毛利为负或零，无法通过广告盈利，请优化成本/售价/退款率。</div>`;
+        } else {
+            roiWithRefundSpan.innerHTML = `${res.breakEvenWithRefund.toFixed(2)} <small style="font-size:0.9rem;">:1</small>`;
+            warningArea.innerHTML = '';
+        }
+        profitWithoutRefundSpan.innerText = `¥ ${res.profitBeforeRefund.toFixed(2)}`;
+        profitWithRefundSpan.innerText = `¥ ${res.profitAfterRefund.toFixed(2)}`;
+        profitMarginRateSpan.innerText = `${res.profitMargin.toFixed(2)}%`;
+        if (res.breakEvenWithoutRefund === Infinity || res.profitBeforeRefund <= 0) {
+            roiWithoutRefundSpan.innerText = res.profitBeforeRefund <= 0 ? '无法保本' : '∞';
+        } else {
+            roiWithoutRefundSpan.innerText = `${res.breakEvenWithoutRefund.toFixed(2)} :1`;
+        }
+    }
+
+    function saveCurrentRecord() {
+        const product = productNameInput.value.trim();
+        if (!product) { alert('请填写产品名称后再保存'); return; }
+        const res = computeUnitMetrics();
+        const record = {
+            id: Date.now(),
+            productName: product,
+            timestamp: new Date().toLocaleString(),
+            cost: costInput.value,
+            shipping: shippingInput.value,
+            price: priceInput.value,
+            platformRate: platformRateInput.value,
+            commissionRate: commissionRateInput.value,
+            otherFee: otherFeeInput.value,
+            refundRate: refundRateInput.value,
+            breakEvenROI: (res.profitAfterRefund > 0) ? res.breakEvenWithRefund.toFixed(2) : '无法保本',
+            unitTotalCost: res.totalCostPerUnit.toFixed(2),
+            unitProfit: res.profitAfterRefund.toFixed(2),
+            profitMargin: res.profitMargin.toFixed(2)
+        };
+        historyRecords.unshift(record);
+        saveHistoryToStorage();
+        alert('已保存到历史记录');
+    }
+
+    function renderHistoryModal(keyword = '') {
+        let filtered = [...historyRecords];
+        if (keyword.trim()) {
+            const kw = keyword.trim().toLowerCase();
+            filtered = filtered.filter(r => r.productName.toLowerCase().includes(kw));
+        }
+        if (filtered.length === 0) {
+            historyListContainer.innerHTML = '<div class="empty-history">📭 暂无历史记录，保存后显示</div>';
+            return;
+        }
+        let html = `<table class="history-table"><thead><tr>
+                        <th class="delete-checkbox"><input type="checkbox" id="selectAllCheckbox"></th>
+                        <th>产品名称</th><th>时间</th><th>售价/成本</th><th>退款率</th>
+                        <th>单件总成本(元)</th><th>单件利润(元)</th><th>利润率</th><th>保本ROI</th><th>操作</th>
+                     </thead><tbody>`;
+        filtered.forEach(rec => {
+            const margin = rec.profitMargin ? `${rec.profitMargin}%` : '?';
+            html += `<tr data-id="${rec.id}">
+                        <td class="delete-checkbox"><input type="checkbox" class="history-checkbox" value="${rec.id}"></td>
+                        <td>${escapeHtml(rec.productName)}</td>
+                        <td>${rec.timestamp}</td>
+                        <td>¥${rec.price} / ¥${rec.cost}</td>
+                        <td>${rec.refundRate}%</td>
+                        <td>¥${rec.unitTotalCost || (parseFloat(rec.cost)+parseFloat(rec.shipping)+ (parseFloat(rec.price)*parseFloat(rec.platformRate)/100) + (parseFloat(rec.price)*parseFloat(rec.commissionRate)/100) + parseFloat(rec.otherFee)).toFixed(2)}</td>
+                        <td>¥${rec.unitProfit || '?'}</td>
+                        <td>${margin}</td>
+                        <td>${rec.breakEvenROI}</td>
+                        <td><button class="simulate-btn" data-id="${rec.id}">💰 实际盈亏计算</button></td>
+                      </tr>`;
+        });
+        html += `</tbody></table>`;
+        historyListContainer.innerHTML = html;
+
+        const selectAll = document.getElementById('selectAllCheckbox');
+        if (selectAll) {
+            selectAll.onchange = (e) => {
+                document.querySelectorAll('.history-checkbox').forEach(cb => cb.checked = e.target.checked);
+            };
+        }
+        document.querySelectorAll('.simulate-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const record = historyRecords.find(r => r.id === id);
+                if (record) openSimulateModal(record);
+            });
+        });
+    }
+
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    function deleteSelectedRecords() {
+        const checkboxes = document.querySelectorAll('.history-checkbox:checked');
+        if (checkboxes.length === 0) { alert('请先勾选要删除的记录'); return; }
+        const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        historyRecords = historyRecords.filter(rec => !idsToDelete.includes(rec.id));
+        saveHistoryToStorage();
+        renderHistoryModal(searchHistoryInput.value);
+    }
+
+    function openSimulateModal(record) {
+        currentSimRecord = record;
+        let unitCost = record.unitTotalCost;
+        if (!unitCost) {
+            const price = parseFloat(record.price);
+            const cost = parseFloat(record.cost);
+            const shipping = parseFloat(record.shipping);
+            const platformRate = parseFloat(record.platformRate);
+            const commissionRate = parseFloat(record.commissionRate);
+            const otherFee = parseFloat(record.otherFee);
+            const platformFee = (price * platformRate) / 100;
+            const commissionFee = (price * commissionRate) / 100;
+            unitCost = (cost + shipping + platformFee + commissionFee + otherFee).toFixed(2);
+        }
+        const unitProfit = record.unitProfit || '?';
+        const profitMargin = record.profitMargin ? `${record.profitMargin}%` : '?';
+        const breakEvenROI = record.breakEvenROI;
+        simProductInfo.innerHTML = `
+            <div>📛 产品名称：${record.productName}</div>
+            <div>🏷️ 售价：¥${record.price}</div>
+            <div>📈 保本ROI：${breakEvenROI}</div>
+            <div>💰 单件利润（利润率）：¥${unitProfit} (${profitMargin})</div>
+        `;
+        simGMV.value = '';
+        simRefundRate.value = '0';
+        simROI.value = '2.0';
+        simResultArea.innerHTML = '填写实际数据后点击计算';
+        simulateModal.style.display = 'flex';
+    }
+
+    function computeActualProfit() {
+        if (!currentSimRecord) return;
+        const gmv = parseFloat(simGMV.value);
+        const refundRate = parseFloat(simRefundRate.value) || 0;
+        const roi = parseFloat(simROI.value);
+        if (isNaN(gmv) || gmv <= 0) { simResultArea.innerHTML = '❌ 请输入有效的GMV（大于0）'; return; }
+        if (isNaN(roi) || roi <= 0) { simResultArea.innerHTML = '❌ ROI必须大于0'; return; }
+
+        const price = parseFloat(currentSimRecord.price);
+        const cost = parseFloat(currentSimRecord.cost);
+        const shipping = parseFloat(currentSimRecord.shipping);
+        const platformRate = parseFloat(currentSimRecord.platformRate);
+        const commissionRate = parseFloat(currentSimRecord.commissionRate);
+        const otherFee = parseFloat(currentSimRecord.otherFee);
+        
+        let orderCount = Math.floor(gmv / price);
+        if (orderCount <= 0) { simResultArea.innerHTML = '⚠️ GMV小于单价，至少需要卖出1件商品'; return; }
+        
+        const platformFeePerUnit = (price * platformRate) / 100;
+        const commissionFeePerUnit = (price * commissionRate) / 100;
+        const totalCostPerUnit = cost + shipping + platformFeePerUnit + commissionFeePerUnit + otherFee;
+        
+        const totalCost = orderCount * totalCostPerUnit;
+        const totalAdCost = gmv / roi;
+        const effectiveGMV = gmv * (1 - refundRate / 100);
+        const netProfit = effectiveGMV - totalCost - totalAdCost;
+        
+        let breakEvenROIForScenario = null;
+        let breakEvenMessage = '';
+        const profitBeforeAd = effectiveGMV - totalCost;
+        if (profitBeforeAd > 0) {
+            breakEvenROIForScenario = gmv / profitBeforeAd;
+            breakEvenMessage = `🎯 该场景下保本ROI = ${breakEvenROIForScenario.toFixed(2)} :1<br>(广告ROI需达到此值才不亏钱)`;
+        } else if (profitBeforeAd <= 0) {
+            breakEvenMessage = `⚠️ 有效GMV(${effectiveGMV.toFixed(2)}) 减去总成本(${totalCost.toFixed(2)}) 后利润 ≤0，无法通过广告盈利，保本ROI为无穷大。`;
+        }
+        
+        simResultArea.innerHTML = `
+            <div style="font-weight:bold; margin-bottom:0.5rem;">📊 实际盈亏结果</div>
+            <div>订单数量：${orderCount} 单</div>
+            <div>总成本(不含广告)：¥${totalCost.toFixed(2)}</div>
+            <div>总广告花费：¥${totalAdCost.toFixed(2)}</div>
+            <div>有效GMV(扣减退款)：¥${effectiveGMV.toFixed(2)}</div>
+            <hr style="margin:0.5rem 0;">
+            <div style="font-size:1rem; font-weight:800; ${netProfit>=0 ? 'color:#2c7a47' : 'color:#b91c1c'}">
+                ${netProfit >= 0 ? '✅ 净利润：¥' + netProfit.toFixed(2) : '❌ 净亏损：¥' + Math.abs(netProfit).toFixed(2)}
+            </div>
+            <hr style="margin:0.5rem 0;">
+            <div style="font-size:0.85rem; background:#fef9e3; padding:0.5rem; border-radius:0.8rem;">
+                ${breakEvenMessage}
+            </div>
+            <div style="font-size:0.7rem; margin-top:0.5rem;">* 基于保存的成本结构计算，保本ROI不考虑实际广告花费，仅依赖GMV和退款率。</div>
+        `;
+    }
+
+    function setExample() {
+        productNameInput.value = '示例商品';
+        costInput.value = '20.00';
+        shippingInput.value = '5.00';
+        priceInput.value = '50.00';
+        platformRateInput.value = '5.0';
+        commissionRateInput.value = '3.0';
+        otherFeeInput.value = '0.00';
+        refundRateInput.value = '0.0';
+        renderResults();
+    }
+    function clearAll() {
+        productNameInput.value = '';
+        costInput.value = '0';
+        shippingInput.value = '0';
+        priceInput.value = '0';
+        platformRateInput.value = '0';
+        commissionRateInput.value = '0';
+        otherFeeInput.value = '0';
+        refundRateInput.value = '0';
+        renderResults();
+    }
+
+    function openToolboxModal() {
+        toolboxModal.style.display = 'flex';
+    }
+    function closeToolboxModal() {
+        toolboxModal.style.display = 'none';
+    }
+
+    function bindEvents() {
+        const inputs = [costInput, shippingInput, priceInput, platformRateInput, commissionRateInput, otherFeeInput, refundRateInput];
+        inputs.forEach(inp => inp.addEventListener('input', renderResults));
+        resetExampleBtn.addEventListener('click', setExample);
+        clearAllBtn.addEventListener('click', clearAll);
+        saveRecordBtn.addEventListener('click', saveCurrentRecord);
+        historyBtn.addEventListener('click', () => { renderHistoryModal(''); modal.style.display = 'flex'; });
+        closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', (e) => { 
+            if (e.target === modal) modal.style.display = 'none'; 
+            if (e.target === simulateModal) simulateModal.style.display = 'none';
+            if (e.target === toolboxModal) toolboxModal.style.display = 'none';
+        });
+        searchHistoryBtn.addEventListener('click', () => renderHistoryModal(searchHistoryInput.value));
+        batchDeleteBtn.addEventListener('click', deleteSelectedRecords);
+        searchHistoryInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') renderHistoryModal(searchHistoryInput.value); });
+        closeSimModalBtn.addEventListener('click', () => simulateModal.style.display = 'none');
+        calcSimBtn.addEventListener('click', computeActualProfit);
+        
+        openToolboxBtn.addEventListener('click', openToolboxModal);
+        closeToolboxModalBtn.addEventListener('click', closeToolboxModal);
+    }
+
+    loadHistoryFromStorage();
+    bindEvents();
+    setExample();
+</script>
+</body>
+</html>
